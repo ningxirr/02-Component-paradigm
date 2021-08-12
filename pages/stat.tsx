@@ -1,9 +1,8 @@
 import React from "react";
 import { NextPage } from "next";
-import { useState } from "react";
 import { CatPost } from "./types/Cats";
 import { Table, Row, Col, Button} from 'antd';
-import {SmileOutlined} from '@ant-design/icons';
+import {HomeOutlined } from '@ant-design/icons';
 
 interface StatProps {
   posts: CatPost[];
@@ -11,15 +10,14 @@ interface StatProps {
 
   const count = 0;
   const Stat: NextPage<StatProps> = ({ posts }) => {
-    const [selectedPosts, setSelectedPosts] = useState(posts);
-    const data = 
-        selectedPosts.map(({ author }, index) => (
-            {
-              key: index,
-              name: author,
-              number : 1,
-            }
-        ))
+    
+    const accData = posts.reduce(
+      (prevAcc,{author}) => ({
+        ...prevAcc,
+        [author]: author in prevAcc ? prevAcc[author]+1 : 1,
+      }),
+      {}
+    );
 
     const columns = [
         {
@@ -29,11 +27,23 @@ interface StatProps {
         {
             title: ' The number of images',
             dataIndex: 'number',
-            // defaultSortOrder: 'descend',
-            sorter: (a, b) => a.number - b.number, 
-            // sortDirections: ['descend'],
+            defaultSortOrder: 'descend',
+            sorter: (a, b) => a.number - b.number,
         },
-    ]
+    ];
+
+    const data = Object.entries(accData).map(
+      ([author,number], index) => ({
+        key: index,
+        name: author,
+        number,
+      })
+    );
+
+    function onChange(pagination, filters, sorter, extra) {
+      console.log('params', pagination, filters, sorter, extra);
+    }
+    
 
     return (
       <div>
@@ -42,19 +52,25 @@ interface StatProps {
 
             <Row justify="center">
                 <Col >
-                    <Button type="primary" href="/" size="large" shape="round" icon={<SmileOutlined/> }> Back to Home Page </Button>
+                    <Button type="primary" href="/" size="large" shape="round" icon={<HomeOutlined />}> 
+                      Back to Home Page
+                    </Button>
                 </Col>
             </Row>   
       </div>
     );
   }
   
-Stat.getInitialProps = async ({
-  req: {
-    headers: { host },
-  },
-}): Promise<StatProps> => {
-  console.log(host);
+Stat.getInitialProps = async ({req}):Promise<StatProps> => {
+  let host = "";
+  if (req!=undefined){
+    const {
+      headers: {host: hostHeader},
+    } = req;
+    host = hostHeader;
+  }else {
+    host = "localhost:3000";
+  }
   const res = await fetch(`http://${host}/api/getCats`);
   return { posts: await res.json() };
 };
