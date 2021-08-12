@@ -7,7 +7,7 @@ import { useState } from "react";
 import CatCard from "../components/CatCard";
 import Link from "next/link";
 import { Row, Col, Button } from "antd";
-import { SmileOutlined } from "@ant-design/icons";
+import {BarChartOutlined} from '@ant-design/icons';
 
 interface HomeProps {
   posts: CatPost[];
@@ -33,21 +33,9 @@ const Home: NextPage<HomeProps> = ({ posts }) => {
         <div className=""></div>
       </main>
       <footer className={styles.footer}>
-        <Link href="/stat">
-          <a>Stat Page</a>
-        </Link>
-
-        {/* <Button
-          type="primary"
-          href="/stat"
-          size="large"
-          style={{ margin: 200 }}
-          shape="round"
-        >
-          {" "}
-          Stat Page{" "}
-        </Button> */}
-
+      <Button type="link" href="./stat" size="large" shape="round" icon={<BarChartOutlined />}> 
+        Uploaded Stat
+      </Button>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
@@ -63,12 +51,16 @@ const Home: NextPage<HomeProps> = ({ posts }) => {
   );
 };
 
-Home.getInitialProps = async ({
-  req: {
-    headers: { host },
-  },
-}): Promise<HomeProps> => {
-  console.log(host);
+Home.getInitialProps = async ({req}):Promise<HomeProps> => {
+  let host = "";
+  if (req!=undefined){
+    const {
+      headers: {host: hostHeader},
+    } = req;
+    host = hostHeader;
+  }else {
+    host = "localhost:3000";
+  }
   const res = await fetch(`http://${host}/api/getCats`);
   return { posts: await res.json() };
 };
