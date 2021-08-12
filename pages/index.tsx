@@ -37,17 +37,16 @@ const Home: NextPage<HomeProps> = ({ posts }) => {
           <a>Stat Page</a>
         </Link>
 
-        <Button
+        {/* <Button
           type="primary"
           href="/stat"
           size="large"
           style={{ margin: 200 }}
           shape="round"
-          icon={<SmileOutlined />}
         >
           {" "}
           Stat Page{" "}
-        </Button>
+        </Button> */}
 
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
